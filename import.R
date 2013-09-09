@@ -10,13 +10,14 @@
 # file1 <- read.csv(file.choose(),
 	# header = TRUE)
 
-# extension <- readline("What extension do your files have? ")
-extension <- ".gpx"
-extension <- sub(".", "", extension) # cuts the period, so they're standardized
+extension <- readline("What extension do your files have? (Options: gpx, kml, csv)\n")
+# extension <- ".gpx"
+extension <- sub("\\.", "", extension) # cuts the period, so they're standardized
 # if they have .csv, possibly skip straight to mapping
+GPSType <- extension # change once we have more than just .gpx
 
 # glob2rx(".gpx")
-gpxFilenames <- Sys.glob(paste("*.", extension, sep = ""))
+gpxFilenames <- Sys.glob(paste("Imported Files/*.", extension, sep = ""))
 
 
 
@@ -29,7 +30,7 @@ for (fileNumber in fileNumbers) {
 	newFilename <- 	paste(sub(paste("\\.", extension, sep = ""), "", gpxFilenames[fileNumber]), ".csv", sep = "") # deletes original extension
 
 	gpsbabelCommand <- paste("sudo gpsbabel -t -i ", 
-		extension, 
+		GPSType, 
 		" -f '", 
 		gpxFilenames[fileNumber],
 		"' -o unicsv -F '", 
@@ -42,9 +43,17 @@ for (fileNumber in fileNumbers) {
 	# add variables (based on GPS/addvariables.R)
 	track <- read.csv(newFilename, 
 		header = TRUE)
+	if(!exists("Altitude", track))
+		(track$Altitude <- NA)
+	if(!exists("Date", track))
+		(track$Date <- NA)
+	if(!exists("Time", track))
+		(track$Time <- NA)
 	track <- track[c("Latitude", "Longitude", "Altitude", "Date", "Time")]
 	track$Seg <- 1
 	track$Seg[1] <- NA # keeps map from drawing a line between one ride and the next
+
+# need code to check whether it should append or not
 
 	write.table(track, 
 		"allTracks.csv",

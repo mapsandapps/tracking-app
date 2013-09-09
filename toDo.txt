@@ -1,0 +1,6 @@
+browse to find files instead of having to put them in folder
+handle more file types
+maybe drop use of gpsbabel?
+centering maps
+handling one large file (i.e. how to set Seg <- NA when some amount of time has elapsed)
+
