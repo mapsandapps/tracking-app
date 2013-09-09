@@ -1,0 +1,98 @@
+#
+# Developer : Mollie Taylor (mollie.taylor@gmail.com)
+# Date : 2013
+# All code ©2013 Mollie Taylor
+# All rights reserved
+#
+
+allTracks <- read.csv("allTracks.csv", 
+	header = TRUE)
+
+meanLon <- mean(allTracks$Longitude)
+meanLat <- mean(allTracks$Latitude)
+lonHiRange <- quantile(allTracks$Longitude, probs = c(0.95))
+lonLoRange <- quantile(allTracks$Longitude, probs = c(0.05))
+lonRange <- lonHiRange - lonLoRange
+latHiRange <- quantile(allTracks$Latitude, probs = c(0.95))
+latLoRange <- quantile(allTracks$Latitude, probs = c(0.05))
+latRange <- latHiRange - latLoRange
+# lonRange <- range(allTracks$Longitude)[2] - range(allTracks$Longitude)[1]
+# latRange <- range(allTracks$Latitude)[2] - range(allTracks$Latitude)[1]
+
+allTracks$Latitude <- ifelse(is.na(allTracks$Seg), NA, allTracks$Latitude)
+allTracks$Longitude <- ifelse(is.na(allTracks$Seg), NA, allTracks$Longitude)
+
+library(ggmap)
+
+# create directory "Maps" if it does not exist:
+if (!any(list.dirs() == "./Maps"))
+	(system("mkdir Maps")) # not sure why this returns 0
+
+# default map:
+	mapImageData <- get_map(location = c(lon = meanLon, 
+		lat = meanLat),
+		zoom = 11,
+		# size = c(500, 500),
+		maptype = c("toner"), #toner, watercolor
+		source = c("stamen"))
+	ggmap(mapImageData,
+		extent = "device", # takes out axis, etc.
+		darken = c(0.6, "white")) + # makes basemap lighter
+		geom_path(aes(x = Longitude,
+			y = Latitude),
+		data = allTracks,
+		colour = "black", #F8971F F4640D
+		size = 1.2,
+		pch = 20) +
+		geom_path(aes(x = Longitude,
+			y = Latitude),
+		data = allTracks,
+		colour = "#F8971F", #F8971F F4640D
+		size = 0.8,
+		pch = 20)
+	dev.copy(png, "Maps/default.png")
+	dev.off()
+
+
+mapWidth <- max(lonRange, latRange)
+
+# add to this:
+if(mapWidth < 0.025) {
+	mapZoom = 15
+} else if(mapWidth < .05) {
+	mapZoom = 14
+} else if(mapWidth < .1) {
+	mapZoom = 13
+} else if(mapWidth < .2) {
+	mapZoom = 12
+} else if(mapWidth < .4) {
+	mapZoom = 11
+} else{
+	mapZoom = 10
+}
+
+# auto map:
+	mapImageData <- get_map(location = c(lon = mean(c(lonLoRange, lonHiRange)), 
+		lat = mean(c(latLoRange, latHiRange))), # maybe use 20th/80th percentile or something instead of min/max
+		zoom = mapZoom,
+		# size = c(500, 500),
+		maptype = c("toner"), #toner, watercolor
+		source = c("stamen"))
+	ggmap(mapImageData,
+		extent = "device", # takes out axis, etc.
+		darken = c(0.6, "white")) + # makes basemap lighter
+		geom_path(aes(x = Longitude,
+			y = Latitude),
+		data = allTracks,
+		colour = "black", #F8971F F4640D
+		size = 1.2,
+		pch = 20) +
+		geom_path(aes(x = Longitude,
+			y = Latitude),
+		data = allTracks,
+		colour = "#F8971F", #F8971F F4640D
+		size = 0.8,
+		pch = 20)
+	dev.copy(png, "Maps/auto.png")
+	dev.off()
+
