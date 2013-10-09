@@ -56,20 +56,7 @@ if (!any(list.dirs() == "./Maps"))
 
 mapWidth <- max(lonRange, latRange)
 
-# add to this:
-if(mapWidth < 0.025) {
-	mapZoom = 15
-} else if(mapWidth < .05) {
-	mapZoom = 14
-} else if(mapWidth < .1) {
-	mapZoom = 13
-} else if(mapWidth < .2) {
-	mapZoom = 12
-} else if(mapWidth < .4) {
-	mapZoom = 11
-} else{
-	mapZoom = 10
-}
+mapZoom <- 13 - log2(10 * mapWidth)
 
 # auto map:
 	mapImageData <- get_map(location = c(lon = mean(c(lonLoRange, lonHiRange)), 
