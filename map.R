@@ -8,13 +8,14 @@
 allTracks <- read.csv("allTracks.csv", 
 	header = TRUE)
 
+rangeConst <- 0.05
 meanLon <- mean(allTracks$Longitude)
 meanLat <- mean(allTracks$Latitude)
-lonHiRange <- quantile(allTracks$Longitude, probs = c(0.95))
-lonLoRange <- quantile(allTracks$Longitude, probs = c(0.05))
+lonHiRange <- quantile(allTracks$Longitude, probs = c(1 - rangeConst))
+lonLoRange <- quantile(allTracks$Longitude, probs = c(rangeConst))
 lonRange <- lonHiRange - lonLoRange
-latHiRange <- quantile(allTracks$Latitude, probs = c(0.95))
-latLoRange <- quantile(allTracks$Latitude, probs = c(0.05))
+latHiRange <- quantile(allTracks$Latitude, probs = c(1 - rangeConst))
+latLoRange <- quantile(allTracks$Latitude, probs = c(rangeConst))
 latRange <- latHiRange - latLoRange
 # lonRange <- range(allTracks$Longitude)[2] - range(allTracks$Longitude)[1]
 # latRange <- range(allTracks$Latitude)[2] - range(allTracks$Latitude)[1]
@@ -25,8 +26,7 @@ allTracks$Longitude <- ifelse(is.na(allTracks$Seg), NA, allTracks$Longitude)
 library(ggmap)
 
 # create directory "Maps" if it does not exist:
-if (!any(list.dirs() == "./Maps"))
-	(system("mkdir Maps")) # not sure why this returns 0
+dir.create("./Maps")
 
 # default map:
 	mapImageData <- get_map(location = c(lon = meanLon, 
@@ -56,7 +56,7 @@ if (!any(list.dirs() == "./Maps"))
 
 mapWidth <- max(lonRange, latRange)
 
-mapZoom <- 13 - log2(10 * mapWidth)
+mapZoom <- floor(13 - log2(10 * mapWidth))
 
 # auto map:
 	mapImageData <- get_map(location = c(lon = mean(c(lonLoRange, lonHiRange)), 
