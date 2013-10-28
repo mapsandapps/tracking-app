@@ -1,10 +1,12 @@
-appendTrack <- function(fileNumbers) {
+appendTrack <- function(filenames) {
+  extensions <- gsub("^.+\\.", "", filenames)
+  fileNumbers <- 1:length(filenames)
   for (fileNumber in fileNumbers) {
-
-    newFilename <-  paste(sub(paste("\\.", extension, sep = ""), "", gpxFilenames[fileNumber]), ".csv", sep = "") # deletes original extension
+    # delete original extension and add new one:
+    newFilename <-  paste(sub(paste("\\.", extensions[fileNumber], sep = ""), "", filenames[fileNumber]), ".csv", sep = "") 
 
     gpsbabelCommand <- paste("sudo gpsbabel -t -i ", 
-      GPSType, 
+      extensions[fileNumber], 
       " -f '", 
       gpxFilenames[fileNumber],
       "' -o unicsv -F '", 

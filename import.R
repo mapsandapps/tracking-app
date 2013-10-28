@@ -13,24 +13,14 @@
 
 source("functions.R")
 
-# # file.choose()
-# library(tcltk)
-# # this means i should be able to remove the loop below:
-# lapply(tk_choose.files(caption = "Choose X"), function)
+# file.choose()
+library(tcltk)
+# this means i should be able to remove the loop below:
+# filenames <- lapply(tk_choose.files(caption = "Choose X"), function)
 
-extension <- readline("What extension do your files have? (Options: gpx, kml, csv)\n")
-# extension <- ".gpx"
-extension <- sub("\\.", "", extension) # cuts the period, so they're standardized
-# if they have .csv, possibly skip straight to mapping
-GPSType <- extension # change once we have more than just .gpx
-
-# glob2rx(".gpx")
-gpxFilenames <- Sys.glob(paste("Imported Files/*.", extension, sep = ""))
+filenames <- tk_choose.files(caption = "Choose files")
+# grepl regexpr gregexpr
 
 
 
-# there's probably a more efficient way to do this than a loop:
-
-fileNumbers <- 1:length(gpxFilenames)
-
-appendTrack(fileNumbers)
+appendTrack(filenames)
