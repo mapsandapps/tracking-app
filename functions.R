@@ -27,15 +27,24 @@ appendTrack <- function(fileNumbers) {
     track$Seg <- 1
     track$Seg[1] <- NA # keeps map from drawing a line between one ride and the next
 
-  # need code to check whether it should append or not
-
-    write.table(track, 
-      "allTracks.csv",
-      append = TRUE,
-      quote = FALSE,
-      sep = ",",
-      row.names = FALSE,
-      col.names = FALSE)
+  # check whether it should append or not:
+    if(file.exists("allTracks.csv")) {
+      write.table(track, 
+        "allTracks.csv",
+        append = TRUE,
+        quote = FALSE,
+        sep = ",",
+        row.names = FALSE,
+        col.names = FALSE)
+    } else {
+      write.table(track, 
+        "allTracks.csv",
+        append = FALSE,
+        quote = FALSE,
+        sep = ",",
+        row.names = FALSE,
+        col.names = TRUE)      
+    }
 
   }
 }

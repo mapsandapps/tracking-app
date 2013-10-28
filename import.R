@@ -9,6 +9,14 @@
 # file1 <- read.csv(file.choose(),
 	# header = TRUE)
 
+# appending <- readline("Append? (y/n) ")
+
+source("functions.R")
+
+# # file.choose()
+# library(tcltk)
+# # this means i should be able to remove the loop below:
+# lapply(tk_choose.files(caption = "Choose X"), function)
 
 extension <- readline("What extension do your files have? (Options: gpx, kml, csv)\n")
 # extension <- ".gpx"
