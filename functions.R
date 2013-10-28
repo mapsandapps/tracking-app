@@ -5,16 +5,20 @@ appendTrack <- function(filenames) {
     # delete original extension and add new one:
     newFilename <-  paste(sub(paste("\\.", extensions[fileNumber], sep = ""), "", filenames[fileNumber]), ".csv", sep = "") 
 
-    gpsbabelCommand <- paste("sudo gpsbabel -t -i ", 
+    if (extensions[fileNumber] != "csv") {
+      gpsbabelCommand <- paste("sudo gpsbabel -t -i ", 
       extensions[fileNumber], 
       " -f '", 
-      gpxFilenames[fileNumber],
+      filenames[fileNumber],
       "' -o unicsv -F '", 
       newFilename,
       "'",
       sep = "")
 
-    system(gpsbabelCommand)
+      system(gpsbabelCommand)
+    } else {
+      newFilename <- filenames[fileNumber]
+    }
 
     # add variables (based on GPS/addvariables.R)
     track <- read.csv(newFilename, 
@@ -50,3 +54,35 @@ appendTrack <- function(filenames) {
 
   }
 }
+
+mapSpecs <- function(tracks, rangeConst) {
+  meanLon <- mean(allTracks$Longitude, 
+    na.rm = TRUE)
+  meanLat <- mean(allTracks$Latitude, 
+    na.rm = TRUE)
+  lonHiRange <- quantile(allTracks$Longitude, 
+    probs = c(1 - rangeConst), 
+    na.rm = TRUE)
+  lonLoRange <- quantile(allTracks$Longitude, 
+    probs = c(rangeConst), 
+    na.rm = TRUE)
+  lonRange <- lonHiRange - lonLoRange
+  latHiRange <- quantile(allTracks$Latitude, 
+    probs = c(1 - rangeConst), 
+    na.rm = TRUE)
+  latLoRange <- quantile(allTracks$Latitude, 
+    probs = c(rangeConst), 
+    na.rm = TRUE)
+  latRange <- latHiRange - latLoRange
+  # lonRange <- range(allTracks$Longitude)[2] - range(allTracks$Longitude)[1]
+  # latRange <- range(allTracks$Latitude)[2] - range(allTracks$Latitude)[1]
+
+  mapWidth <- max(lonRange, latRange)
+  mapZoom <- floor(13 - log2(10 * mapWidth))
+
+  return(data.frame(meanLon, meanLat, 
+    lonHiRange, lonLoRange, latHiRange, latLoRange,
+    mapZoom))
+}
+
+
