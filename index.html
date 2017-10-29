@@ -13,12 +13,34 @@
 </head>
 
 <body>
-  <input type="file" id="files" name="files[]" multiple />
-  <!-- TODO: have color pickers for modes -->
+  <div id="left-column">
+    <input type="file" id="files" name="files[]" multiple />
+    <!-- TODO: have color pickers for modes -->
+    <!-- TODO: putting files in here should reset any existing map & data -->
 
-  <div id="map"></div>
+    <div id="map"></div>
 
-  <button onclick="createImage()">Save screenshot</button>
+    <div class="buttons">
+      <button onclick="createImage()">Save screenshot</button>
+      <span id="track-interactions" class="hidden">
+        <button id="advance-button" onclick="advanceTrack()">Next</button>
+        <span id="completed-tracks">0</span> of <span id="total-tracks">0</span> tracks mapped
+      </span>
+    </div>
+  </div>
+
+  <div id="right-column">
+    <div id="settings">
+      <div>Settings:</div>
+      <div>
+        Fit map to:
+        <form id="fit-map">
+          <input type="radio" name="fit-map-to" value="all" id="fit-to-all" checked><label for="fit-to-all">All tracks</label>
+          <input type="radio" name="fit-map-to" value="all" id="fit-to-each"><label for="fit-to-each">Each track</label>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <script src='https://cdn.jsdelivr.net/npm/lodash@4.17.4/lodash.min.js'></script>
   <script src='plugins/html2canvas.min.js'></script>

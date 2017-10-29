@@ -1,4 +1,4 @@
-html, body, #map {
+html, body {
   height: 100%;
   width: 100%;
   margin: 0;
@@ -19,6 +19,16 @@ html, body, #map {
   border: none;
 }
 
-button {
-  display: block;
+.hidden {
+  display: none;
+}
+
+#left-column,
+#right-column {
+  display: inline-block;
+  vertical-align: top;
+}
+
+#right-column {
+  margin: 12px;
 }
