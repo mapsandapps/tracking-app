@@ -18,3 +18,7 @@ html, body, #map {
   font-size: 14px;
   border: none;
 }
+
+button {
+  display: block;
+}

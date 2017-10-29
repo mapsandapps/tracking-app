@@ -7,6 +7,7 @@ L.tileLayer('https://api.mapbox.com/styles/v1/mapsandapps/cj9bj48ts4cza2rn2avra7
 }).addTo(map);
 
 // TODO: have tracks load one at a time; pause after each to take screenshot
+// TODO: and let you insert some text about that route segment
 // TODO: have button that takes the screenshot for you
 
 var layersLoaded = 0;
@@ -15,9 +16,8 @@ var mapBounds = L.latLngBounds([]);
 
 function handleFileSelect(e) {
   const files = e.target.files;
-  Object.keys(files).forEach(i => {
+  _.forEach(files, file => {
     totalLayers = files.length;
-    const file = files[i];
     const reader = new FileReader();
     reader.readAsText(file);
     reader.onload = () => {
@@ -45,7 +45,6 @@ function getColorByMode(mode) {
 }
 
 function addFileToMap(fileContents) {
-  console.log('addFileToMap');
   var currentLayer = omnivore.gpx.parse(fileContents);
   currentLayer.setStyle({
     opacity: 0.5,
@@ -60,4 +59,36 @@ function addFileToMap(fileContents) {
     console.log('done!');
     map.fitBounds(mapBounds);
   }
+}
+
+function createImage() {
+  var mapElement = document.getElementById('map');
+  html2canvas(mapElement, {
+    useCORS: true,
+    allowTaint: false,
+    onrendered: function(canvas) {
+      var tempCanvas = document.createElement('canvas');
+      tempCanvas.width = 800;
+      tempCanvas.height = 800;
+      var context = tempCanvas.getContext('2d');
+      context.drawImage(canvas, 0, 0, 800, 800);
+      document.body.appendChild(tempCanvas);
+
+      var svgPaths = document.getElementsByTagName('g');
+      _.forEach(svgPaths, path => {
+        context.drawSvg(path.innerHTML, 0, 0, 0, 0);
+      })
+
+      // canvg(tempCanvas, svgPaths.innerHTML, {
+      //   log: true,
+      //   ignoreAnimation: true
+      // });
+      // context.drawSvg(svgPaths.innerHTML, 0, 0, 0, 0);
+
+      var link = document.createElement("a");
+      link.href = tempCanvas.toDataURL('image/png');
+      link.download = 'screenshot.png';
+      link.click();
+    }
+  });
 }
